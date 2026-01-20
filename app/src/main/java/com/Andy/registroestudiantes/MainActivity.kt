@@ -4,44 +4,41 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.Andy.registroestudiantes.presentation.EstudianteAddScreen
+import com.Andy.registroestudiantes.presentation.EstudianteListScreen
+import com.Andy.registroestudiantes.presentation.EstudianteViewModel
 import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             RegistroEstudiantesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                val viewModel: EstudianteViewModel = hiltViewModel()
+
+                NavHost(navController = navController, startDestination = "list") {
+                    composable("list") {
+                        EstudianteListScreen(viewModel) {
+                            navController.navigate("add")
+                        }
+                    }
+                    composable("add") {
+                        EstudianteAddScreen(viewModel) {
+                            navController.popBackStack()
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RegistroEstudiantesTheme {
-        Greeting("Android")
     }
 }
