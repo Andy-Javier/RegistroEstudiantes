@@ -4,8 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +14,14 @@ import androidx.navigation.compose.rememberNavController
 import com.Andy.registroestudiantes.presentation.EstudianteAddScreen
 import com.Andy.registroestudiantes.presentation.EstudianteListScreen
 import com.Andy.registroestudiantes.presentation.EstudianteViewModel
+import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaAddScreen
+import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaListScreen
+import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaViewModel
+import com.Andy.registroestudiantes.presentation.navigation.DrawerMenu
+import com.Andy.registroestudiantes.presentation.navigation.Screen
 import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -24,17 +31,47 @@ class MainActivity : ComponentActivity() {
         setContent {
             RegistroEstudiantesTheme {
                 val navController = rememberNavController()
-                val viewModel: EstudianteViewModel = hiltViewModel()
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                val scope = rememberCoroutineScope()
 
-                NavHost(navController = navController, startDestination = "list") {
-                    composable("list") {
-                        EstudianteListScreen(viewModel) {
-                            navController.navigate("add")
+                // Declaramos los ViewModels aquí para compartirlos entre las pantallas de cada módulo
+                val estudianteViewModel: EstudianteViewModel = hiltViewModel()
+                val asignaturaViewModel: AsignaturaViewModel = hiltViewModel()
+
+                DrawerMenu(
+                    drawerState = drawerState,
+                    navHostController = navController
+                ) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.EstudianteList
+                    ) {
+                        // Módulo Estudiantes
+                        composable<Screen.EstudianteList> {
+                            EstudianteListScreen(
+                                viewModel = estudianteViewModel,
+                                onAddEstudiante = { navController.navigate(Screen.EstudianteAdd) },
+                                onDrawer = { scope.launch { drawerState.open() } }
+                            )
                         }
-                    }
-                    composable("add") {
-                        EstudianteAddScreen(viewModel) {
-                            navController.popBackStack()
+                        composable<Screen.EstudianteAdd> {
+                            EstudianteAddScreen(viewModel = estudianteViewModel) {
+                                navController.popBackStack()
+                            }
+                        }
+
+                        // Módulo Asignaturas
+                        composable<Screen.AsignaturaList> {
+                            AsignaturaListScreen(
+                                viewModel = asignaturaViewModel,
+                                onAddAsignatura = { navController.navigate(Screen.AsignaturaAdd) },
+                                onDrawer = { scope.launch { drawerState.open() } }
+                            )
+                        }
+                        composable<Screen.AsignaturaAdd> {
+                            AsignaturaAddScreen(viewModel = asignaturaViewModel) {
+                                navController.popBackStack()
+                            }
                         }
                     }
                 }
