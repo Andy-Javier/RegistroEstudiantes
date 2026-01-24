@@ -1,4 +1,4 @@
-package com.Andy.registroestudiantes.data.local
+package com.Andy.registroestudiantes.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

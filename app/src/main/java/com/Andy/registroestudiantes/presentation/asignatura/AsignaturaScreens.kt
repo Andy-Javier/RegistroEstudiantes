@@ -1,4 +1,4 @@
-package com.Andy.registroestudiantes.presentation
+package com.Andy.registroestudiantes.presentation.asignatura
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,24 +17,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.Andy.registroestudiantes.domain.model.Estudiante
+import com.Andy.registroestudiantes.domain.model.Asignatura
 import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstudianteListScreen(
-    viewModel: EstudianteViewModel, 
-    onAddEstudiante: () -> Unit,
+fun AsignaturaListScreen(
+    viewModel: AsignaturaViewModel,
+    onAddAsignatura: () -> Unit,
     onDrawer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     
-    EstudianteListContent(
+    AsignaturaListContent(
         uiState = uiState,
         onIntent = { intent -> 
-            if (intent is EstudianteIntent.NuevoEstudiante || intent is EstudianteIntent.OnEstudianteClick) {
+            if (intent is AsignaturaIntent.NuevaAsignatura || intent is AsignaturaIntent.OnAsignaturaClick) {
                 viewModel.onIntent(intent)
-                onAddEstudiante()
+                onAddAsignatura()
             } else {
                 viewModel.onIntent(intent)
             }
@@ -45,15 +45,15 @@ fun EstudianteListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstudianteListContent(
-    uiState: EstudianteUIState,
-    onIntent: (EstudianteIntent) -> Unit,
+fun AsignaturaListContent(
+    uiState: AsignaturaUIState,
+    onIntent: (AsignaturaIntent) -> Unit,
     onDrawer: () -> Unit = {}
 ) {
     Scaffold(
         topBar = { 
             TopAppBar(
-                title = { Text("Lista de Estudiantes") },
+                title = { Text("Lista de Asignaturas") },
                 navigationIcon = {
                     IconButton(onClick = onDrawer) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu")
@@ -63,23 +63,23 @@ fun EstudianteListContent(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                onIntent(EstudianteIntent.NuevoEstudiante)
+                onIntent(AsignaturaIntent.NuevaAsignatura)
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
-            items(uiState.estudiantes) { estudiante ->
+            items(uiState.asignaturas) { asignatura ->
                 ListItem(
-                    headlineContent = { Text(estudiante.nombres) },
-                    supportingContent = { Text("${estudiante.email} - ${estudiante.edad} años") },
+                    headlineContent = { Text(asignatura.nombre) },
+                    supportingContent = { Text("Código: ${asignatura.codigo} - Aula: ${asignatura.aula} - Créditos: ${asignatura.creditos}") },
                     trailingContent = {
                         Row {
-                            IconButton(onClick = { onIntent(EstudianteIntent.OnEstudianteClick(estudiante)) }) {
+                            IconButton(onClick = { onIntent(AsignaturaIntent.OnAsignaturaClick(asignatura)) }) {
                                 Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
                             }
-                            IconButton(onClick = { onIntent(EstudianteIntent.DeleteEstudiante(estudiante)) }) {
+                            IconButton(onClick = { onIntent(AsignaturaIntent.DeleteAsignatura(asignatura)) }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error)
                             }
                         }
@@ -93,14 +93,14 @@ fun EstudianteListContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstudianteAddScreen(viewModel: EstudianteViewModel, onBack: () -> Unit) {
+fun AsignaturaAddScreen(viewModel: AsignaturaViewModel, onBack: () -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     
-    EstudianteAddContent(
+    AsignaturaAddContent(
         uiState = uiState,
         onIntent = { intent ->
-            if (intent is EstudianteIntent.SaveEstudiante) {
-                viewModel.onIntent(EstudianteIntent.SaveEstudiante(onSuccess = onBack))
+            if (intent is AsignaturaIntent.SaveAsignatura) {
+                viewModel.onIntent(AsignaturaIntent.SaveAsignatura(onSuccess = onBack))
             } else {
                 viewModel.onIntent(intent)
             }
@@ -110,33 +110,39 @@ fun EstudianteAddScreen(viewModel: EstudianteViewModel, onBack: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EstudianteAddContent(
-    uiState: EstudianteUIState,
-    onIntent: (EstudianteIntent) -> Unit
+fun AsignaturaAddContent(
+    uiState: AsignaturaUIState,
+    onIntent: (AsignaturaIntent) -> Unit
 ) {
-    Scaffold(topBar = { TopAppBar(title = { Text(if (uiState.estudianteId == null) "Nuevo Estudiante" else "Editar Estudiante") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(if (uiState.asignaturaId == null) "Nueva Asignatura" else "Editar Asignatura") }) }) { padding ->
         Column(modifier = Modifier
             .padding(padding)
             .padding(16.dp)) {
             OutlinedTextField(
-                value = uiState.nombres,
-                onValueChange = { onIntent(EstudianteIntent.NombreChanged(it)) },
-                label = { Text("Nombres") },
+                value = uiState.codigo,
+                onValueChange = { onIntent(AsignaturaIntent.CodigoChanged(it)) },
+                label = { Text("Código") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = uiState.email,
-                onValueChange = { onIntent(EstudianteIntent.EmailChanged(it)) },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+                value = uiState.nombre,
+                onValueChange = { onIntent(AsignaturaIntent.NombreChanged(it)) },
+                label = { Text("Nombre de la Asignatura") },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = uiState.edad,
-                onValueChange = { onIntent(EstudianteIntent.EdadChanged(it)) },
-                label = { Text("Edad") },
+                value = uiState.aula,
+                onValueChange = { onIntent(AsignaturaIntent.AulaChanged(it)) },
+                label = { Text("Aula") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = uiState.creditos,
+                onValueChange = { onIntent(AsignaturaIntent.CreditosChanged(it)) },
+                label = { Text("Créditos") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -150,12 +156,12 @@ fun EstudianteAddContent(
             }
 
             Button(
-                onClick = { onIntent(EstudianteIntent.SaveEstudiante({})) },
+                onClick = { onIntent(AsignaturaIntent.SaveAsignatura({})) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Text(if (uiState.estudianteId == null) "Guardar" else "Actualizar")
+                Text(if (uiState.asignaturaId == null) "Guardar" else "Actualizar")
             }
         }
     }
@@ -163,13 +169,13 @@ fun EstudianteAddContent(
 
 @Preview(showBackground = true)
 @Composable
-fun EstudianteListPreview() {
+fun AsignaturaListPreview() {
     RegistroEstudiantesTheme {
-        EstudianteListContent(
-            uiState = EstudianteUIState(
-                estudiantes = listOf(
-                    Estudiante(1, "Andy Javier", "Andyjavier@gmail.com", 21),
-                    Estudiante(2, "Ashley", "Ashley@gmail.com", 22)
+        AsignaturaListContent(
+            uiState = AsignaturaUIState(
+                asignaturas = listOf(
+                    Asignatura(1, "ADM-101", "Administración", "A-101", 3),
+                    Asignatura(2, "PRG-202", "Programación Aplicada 2", "B-205", 4)
                 )
             ),
             onIntent = {}
@@ -179,13 +185,14 @@ fun EstudianteListPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun EstudianteAddPreview() {
+fun AsignaturaAddPreview() {
     RegistroEstudiantesTheme {
-        EstudianteAddContent(
-            uiState = EstudianteUIState(
-                nombres = "Andy Javier",
-                email = "Andyjavier@gmail.com",
-                edad = "21"
+        AsignaturaAddContent(
+            uiState = AsignaturaUIState(
+                codigo = "PRG-202",
+                nombre = "Programación Aplicada 2",
+                aula = "B-205",
+                creditos = "4"
             ),
             onIntent = {}
         )

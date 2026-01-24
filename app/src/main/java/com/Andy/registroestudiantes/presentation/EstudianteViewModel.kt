@@ -1,10 +1,11 @@
 package com.Andy.registroestudiantes.presentation
 
-import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.Andy.registroestudiantes.data.local.EstudianteEntity
-import com.Andy.registroestudiantes.data.repository.EstudianteRepositoryImpl
+import com.Andy.registroestudiantes.domain.model.Estudiante
+import com.Andy.registroestudiantes.domain.use_case.DeleteEstudianteUseCase
+import com.Andy.registroestudiantes.domain.use_case.GetEstudiantesUseCase
+import com.Andy.registroestudiantes.domain.use_case.RegistrarEstudianteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EstudianteViewModel @Inject constructor(
-    private val repository: EstudianteRepositoryImpl
+    private val getEstudiantesUseCase: GetEstudiantesUseCase,
+    private val registrarEstudianteUseCase: RegistrarEstudianteUseCase,
+    private val deleteEstudianteUseCase: DeleteEstudianteUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EstudianteUIState())
@@ -23,7 +26,7 @@ class EstudianteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getAll().collect { listaEstudiantes ->
+            getEstudiantesUseCase().collect { listaEstudiantes ->
                 _uiState.update { it.copy(estudiantes = listaEstudiantes) }
             }
         }
@@ -44,7 +47,7 @@ class EstudianteViewModel @Inject constructor(
                 val estudiante = intent.estudiante
                 _uiState.update {
                     it.copy(
-                        estudianteId = estudiante.estudianteId,
+                        estudianteId = estudiante.id,
                         nombres = estudiante.nombres,
                         email = estudiante.email,
                         edad = estudiante.edad.toString(),
@@ -65,7 +68,7 @@ class EstudianteViewModel @Inject constructor(
             }
             is EstudianteIntent.DeleteEstudiante -> {
                 viewModelScope.launch {
-                    repository.delete(intent.estudiante)
+                    deleteEstudianteUseCase(intent.estudiante)
                 }
             }
             is EstudianteIntent.SaveEstudiante -> {
@@ -76,42 +79,22 @@ class EstudianteViewModel @Inject constructor(
 
     private fun saveEstudiante(onSuccess: () -> Unit) {
         val currentState = _uiState.value
-        val nombreLimpio = currentState.nombres.trim()
-        val emailLimpio = currentState.email.trim()
+        val edadInt = currentState.edad.toIntOrNull() ?: 0
 
-        if (nombreLimpio.isBlank() || emailLimpio.isBlank() || currentState.edad.isBlank()) {
-            _uiState.update { it.copy(errorMessage = "Todos los campos son obligatorios") }
-            return
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(emailLimpio).matches()) {
-            _uiState.update { it.copy(errorMessage = "El correo electrónico no es válido") }
-            return
-        }
-
-        val edadInt = currentState.edad.toIntOrNull()
-        if (edadInt == null) {
-            _uiState.update { it.copy(errorMessage = "La edad debe ser un número") }
-            return
-        }
+        val estudiante = Estudiante(
+            id = currentState.estudianteId,
+            nombres = currentState.nombres,
+            email = currentState.email,
+            edad = edadInt
+        )
 
         viewModelScope.launch {
-            val existe = repository.findByNombre(nombreLimpio)
-            
-            if (existe != null && existe.estudianteId != currentState.estudianteId) {
-                _uiState.update { it.copy(errorMessage = "Ya existe un estudiante con ese nombre") }
-                return@launch
+            val result = registrarEstudianteUseCase(estudiante)
+            result.onSuccess {
+                onSuccess()
+            }.onFailure { exception ->
+                _uiState.update { it.copy(errorMessage = exception.message) }
             }
-
-            repository.save(
-                EstudianteEntity(
-                    estudianteId = currentState.estudianteId,
-                    nombres = nombreLimpio,
-                    email = emailLimpio,
-                    edad = edadInt
-                )
-            )
-            onSuccess()
         }
     }
 }
