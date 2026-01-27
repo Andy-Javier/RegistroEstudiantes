@@ -4,16 +4,14 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.Andy.registroestudiantes.presentation.EstudianteAddScreen
-import com.Andy.registroestudiantes.presentation.EstudianteListScreen
-import com.Andy.registroestudiantes.presentation.EstudianteViewModel
-import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaAddScreen
-import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaListScreen
-import com.Andy.registroestudiantes.presentation.asignatura.AsignaturaViewModel
+import androidx.navigation.toRoute
+import com.Andy.registroestudiantes.presentation.estudiante.edit.EstudianteEditScreen
+import com.Andy.registroestudiantes.presentation.estudiante.list.EstudianteListScreen
+import com.Andy.registroestudiantes.presentation.asignatura.edit.AsignaturaEditScreen
+import com.Andy.registroestudiantes.presentation.asignatura.list.AsignaturaListScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -22,9 +20,6 @@ fun RegistroNavHost(
 ) {
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    
-    val estudianteViewModel: EstudianteViewModel = hiltViewModel()
-    val asignaturaViewModel: AsignaturaViewModel = hiltViewModel()
 
     DrawerMenu(
         drawerState = drawerState,
@@ -36,9 +31,11 @@ fun RegistroNavHost(
         ) {
             composable<Screen.EstudianteList> {
                 EstudianteListScreen(
-                    viewModel = estudianteViewModel,
                     onAddEstudiante = {
-                        navHostController.navigate(Screen.EstudianteAdd)
+                        navHostController.navigate(Screen.Estudiante(0))
+                    },
+                    onEditEstudiante = { id ->
+                        navHostController.navigate(Screen.Estudiante(id))
                     },
                     onDrawer = {
                         scope.launch {
@@ -48,9 +45,10 @@ fun RegistroNavHost(
                 )
             }
 
-            composable<Screen.EstudianteAdd> {
-                EstudianteAddScreen(
-                    viewModel = estudianteViewModel,
+            composable<Screen.Estudiante> {
+                val args = it.toRoute<Screen.Estudiante>()
+                EstudianteEditScreen(
+                    estudianteId = args.estudianteId,
                     onBack = {
                         navHostController.navigateUp()
                     }
@@ -59,9 +57,11 @@ fun RegistroNavHost(
 
             composable<Screen.AsignaturaList> {
                 AsignaturaListScreen(
-                    viewModel = asignaturaViewModel,
                     onAddAsignatura = {
-                        navHostController.navigate(Screen.AsignaturaAdd)
+                        navHostController.navigate(Screen.Asignatura(0))
+                    },
+                    onEditAsignatura = { id ->
+                        navHostController.navigate(Screen.Asignatura(id))
                     },
                     onDrawer = {
                         scope.launch {
@@ -71,9 +71,10 @@ fun RegistroNavHost(
                 )
             }
 
-            composable<Screen.AsignaturaAdd> {
-                AsignaturaAddScreen(
-                    viewModel = asignaturaViewModel,
+            composable<Screen.Asignatura> {
+                val args = it.toRoute<Screen.Asignatura>()
+                AsignaturaEditScreen(
+                    asignaturaId = args.asignaturaId,
                     onBack = {
                         navHostController.navigateUp()
                     }
