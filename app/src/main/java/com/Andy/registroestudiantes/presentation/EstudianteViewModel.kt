@@ -3,9 +3,9 @@ package com.Andy.registroestudiantes.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.Andy.registroestudiantes.domain.model.Estudiante
-import com.Andy.registroestudiantes.domain.use_case.DeleteEstudianteUseCase
-import com.Andy.registroestudiantes.domain.use_case.GetEstudiantesUseCase
-import com.Andy.registroestudiantes.domain.use_case.RegistrarEstudianteUseCase
+import com.Andy.registroestudiantes.domain.use_case.estudiantes.DeleteEstudianteUseCase
+import com.Andy.registroestudiantes.domain.use_case.estudiantes.GetEstudiantesUseCase
+import com.Andy.registroestudiantes.domain.use_case.estudiantes.RegistrarEstudianteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

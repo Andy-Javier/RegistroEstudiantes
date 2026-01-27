@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Registro Estudiantes</string>
+    <string name="drawer_estudiantes">Estudiantes</string>
+    <string name="drawer_asignaturas">Asignaturas</string>
 </resources>
