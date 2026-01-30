@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,14 +17,9 @@ import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 @Composable
 fun EstudianteEditScreen(
     viewModel: EstudianteEditViewModel = hiltViewModel(),
-    estudianteId: Int,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(estudianteId) {
-        viewModel.setId(estudianteId)
-    }
 
     EstudianteEditContent(
         uiState = uiState,

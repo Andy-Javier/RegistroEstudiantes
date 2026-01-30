@@ -7,7 +7,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.Andy.registroestudiantes.presentation.estudiante.edit.EstudianteEditScreen
 import com.Andy.registroestudiantes.presentation.estudiante.list.EstudianteListScreen
 import com.Andy.registroestudiantes.presentation.asignatura.edit.AsignaturaEditScreen
@@ -46,9 +45,7 @@ fun RegistroNavHost(
             }
 
             composable<Screen.Estudiante> {
-                val args = it.toRoute<Screen.Estudiante>()
                 EstudianteEditScreen(
-                    estudianteId = args.estudianteId,
                     onBack = {
                         navHostController.navigateUp()
                     }
@@ -72,9 +69,7 @@ fun RegistroNavHost(
             }
 
             composable<Screen.Asignatura> {
-                val args = it.toRoute<Screen.Asignatura>()
                 AsignaturaEditScreen(
-                    asignaturaId = args.asignaturaId,
                     onBack = {
                         navHostController.navigateUp()
                     }

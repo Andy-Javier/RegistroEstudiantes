@@ -2,11 +2,8 @@ package com.Andy.registroestudiantes.presentation.asignatura.edit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,14 +17,9 @@ import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 @Composable
 fun AsignaturaEditScreen(
     viewModel: AsignaturaEditViewModel = hiltViewModel(),
-    asignaturaId: Int,
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(asignaturaId) {
-        viewModel.setId(asignaturaId)
-    }
 
     AsignaturaEditContent(
         uiState = uiState,
