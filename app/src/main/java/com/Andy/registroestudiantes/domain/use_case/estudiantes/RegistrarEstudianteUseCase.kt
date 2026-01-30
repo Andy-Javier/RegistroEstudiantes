@@ -1,4 +1,4 @@
-package com.Andy.registroestudiantes.domain.use_case
+package com.Andy.registroestudiantes.domain.use_case.estudiantes
 
 import android.util.Patterns
 import com.Andy.registroestudiantes.domain.model.Estudiante

@@ -1,4 +1,4 @@
-package com.Andy.registroestudiantes.domain.use_case
+package com.Andy.registroestudiantes.domain.use_case.asignaturas
 
 import com.Andy.registroestudiantes.domain.model.Asignatura
 import com.Andy.registroestudiantes.domain.repository.AsignaturaRepository

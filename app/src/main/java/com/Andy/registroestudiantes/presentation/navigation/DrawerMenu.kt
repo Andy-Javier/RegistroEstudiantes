@@ -16,11 +16,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.Andy.registroestudiantes.R
 import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 import kotlinx.coroutines.launch
 
@@ -76,19 +77,19 @@ fun DrawerSheetContent(
         LazyColumn {
             item {
                 DrawerItem(
-                    title = "Estudiantes",
+                    title = stringResource(R.string.drawer_estudiantes),
                     icon = Icons.Default.Person,
-                    isSelected = selectedItem == "Estudiantes"
+                    isSelected = selectedItem == stringResource(R.string.drawer_estudiantes)
                 ) {
-                    onItemClick("Estudiantes", Screen.EstudianteList)
+                    onItemClick(it, Screen.EstudianteList)
                 }
 
                 DrawerItem(
-                    title = "Asignaturas",
+                    title = stringResource(R.string.drawer_asignaturas),
                     icon = Icons.Default.List,
-                    isSelected = selectedItem == "Asignaturas"
+                    isSelected = selectedItem == stringResource(R.string.drawer_asignaturas)
                 ) {
-                    onItemClick("Asignaturas", Screen.AsignaturaList)
+                    onItemClick(it, Screen.AsignaturaList)
                 }
             }
         }
@@ -100,13 +101,19 @@ fun DrawerItem(
     title: String,
     icon: ImageVector,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: (String) -> Unit
 ) {
     NavigationDrawerItem(
-        icon = { Icon(imageVector = icon, contentDescription = title) },
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = if (isSelected) Color.Black else Color.Gray
+            )
+        },
         label = { Text(text = title) },
         selected = isSelected,
-        onClick = onClick,
+        onClick = { onClick(title) },
         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
     )
 }
