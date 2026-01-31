@@ -1,4 +1,4 @@
-package com.Andy.registroestudiantes.presentation.asignatura.edit
+package com.Andy.registroestudiantes.presentation.penalidad.edit
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,17 +15,17 @@ import com.Andy.registroestudiantes.ui.theme.RegistroEstudiantesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AsignaturaEditScreen(
-    viewModel: AsignaturaEditViewModel = hiltViewModel(),
+fun TipoPenalidadEditScreen(
+    viewModel: TipoPenalidadEditViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    AsignaturaEditContent(
+    TipoPenalidadEditContent(
         uiState = uiState,
         onEvent = { event ->
-            if (event is AsignaturaEditEvent.SaveAsignatura) {
-                viewModel.onEvent(AsignaturaEditEvent.SaveAsignatura(onSuccess = onBack))
+            if (event is TipoPenalidadEditEvent.SavePenalidad) {
+                viewModel.onEvent(TipoPenalidadEditEvent.SavePenalidad(onSuccess = onBack))
             } else {
                 viewModel.onEvent(event)
             }
@@ -35,39 +35,32 @@ fun AsignaturaEditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AsignaturaEditContent(
-    uiState: AsignaturaEditState,
-    onEvent: (AsignaturaEditEvent) -> Unit
+fun TipoPenalidadEditContent(
+    uiState: TipoPenalidadEditState,
+    onEvent: (TipoPenalidadEditEvent) -> Unit
 ) {
-    Scaffold(topBar = { TopAppBar(title = { Text(if (uiState.asignaturaId == null) "Nueva Asignatura" else "Editar Asignatura") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { Text(if (uiState.tipoId == null) "Nuevo Tipo de Penalidad" else "Editar Tipo de Penalidad") }) }) { padding ->
         Column(modifier = Modifier
             .padding(padding)
             .padding(16.dp)) {
             OutlinedTextField(
-                value = uiState.codigo,
-                onValueChange = { onEvent(AsignaturaEditEvent.CodigoChanged(it)) },
-                label = { Text("Código") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
                 value = uiState.nombre,
-                onValueChange = { onEvent(AsignaturaEditEvent.NombreChanged(it)) },
-                label = { Text("Nombre de la Asignatura") },
+                onValueChange = { onEvent(TipoPenalidadEditEvent.NombreChanged(it)) },
+                label = { Text("Nombre") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = uiState.aula,
-                onValueChange = { onEvent(AsignaturaEditEvent.AulaChanged(it)) },
-                label = { Text("Aula") },
+                value = uiState.descripcion,
+                onValueChange = { onEvent(TipoPenalidadEditEvent.DescripcionChanged(it)) },
+                label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = uiState.creditos,
-                onValueChange = { onEvent(AsignaturaEditEvent.CreditosChanged(it)) },
-                label = { Text("Créditos") },
+                value = uiState.puntosDescuento,
+                onValueChange = { onEvent(TipoPenalidadEditEvent.PuntosChanged(it)) },
+                label = { Text("Puntos de Descuento") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -81,12 +74,12 @@ fun AsignaturaEditContent(
             }
 
             Button(
-                onClick = { onEvent(AsignaturaEditEvent.SaveAsignatura({})) },
+                onClick = { onEvent(TipoPenalidadEditEvent.SavePenalidad({})) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Text(if (uiState.asignaturaId == null) "Guardar" else "Actualizar")
+                Text(if (uiState.tipoId == null) "Guardar" else "Actualizar")
             }
         }
     }
@@ -94,14 +87,13 @@ fun AsignaturaEditContent(
 
 @Preview(showBackground = true)
 @Composable
-fun AsignaturaEditPreview() {
+fun TipoPenalidadEditPreview() {
     RegistroEstudiantesTheme {
-        AsignaturaEditContent(
-            uiState = AsignaturaEditState(
-                codigo = "PRG-202",
-                nombre = "Programación Aplicada 2",
-                aula = "B-205",
-                creditos = "4"
+        TipoPenalidadEditContent(
+            uiState = TipoPenalidadEditState(
+                nombre = "Tardanza",
+                descripcion = "Llegar tarde a clase",
+                puntosDescuento = "5"
             ),
             onEvent = {}
         )

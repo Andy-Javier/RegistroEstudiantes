@@ -12,6 +12,8 @@ import com.Andy.registroestudiantes.presentation.estudiante.edit.EstudianteEditS
 import com.Andy.registroestudiantes.presentation.estudiante.list.EstudianteListScreen
 import com.Andy.registroestudiantes.presentation.asignatura.edit.AsignaturaEditScreen
 import com.Andy.registroestudiantes.presentation.asignatura.list.AsignaturaListScreen
+import com.Andy.registroestudiantes.presentation.penalidad.edit.TipoPenalidadEditScreen
+import com.Andy.registroestudiantes.presentation.penalidad.list.TipoPenalidadListScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,6 +31,7 @@ fun RegistroNavHost(
             navController = navHostController,
             startDestination = Screen.EstudianteList
         ) {
+            // Estudiantes
             composable<Screen.EstudianteList> {
                 EstudianteListScreen(
                     onAddEstudiante = {
@@ -46,15 +49,14 @@ fun RegistroNavHost(
             }
 
             composable<Screen.Estudiante> {
-                val args = it.toRoute<Screen.Estudiante>()
                 EstudianteEditScreen(
-                    estudianteId = args.estudianteId,
                     onBack = {
                         navHostController.navigateUp()
                     }
                 )
             }
 
+            // Asignaturas
             composable<Screen.AsignaturaList> {
                 AsignaturaListScreen(
                     onAddAsignatura = {
@@ -72,9 +74,32 @@ fun RegistroNavHost(
             }
 
             composable<Screen.Asignatura> {
-                val args = it.toRoute<Screen.Asignatura>()
                 AsignaturaEditScreen(
-                    asignaturaId = args.asignaturaId,
+                    onBack = {
+                        navHostController.navigateUp()
+                    }
+                )
+            }
+
+            // Tipos de Penalidades
+            composable<Screen.TipoPenalidadList> {
+                TipoPenalidadListScreen(
+                    onAddPenalidad = {
+                        navHostController.navigate(Screen.TipoPenalidad(0))
+                    },
+                    onEditPenalidad = { id ->
+                        navHostController.navigate(Screen.TipoPenalidad(id))
+                    },
+                    onDrawer = {
+                        scope.launch {
+                            drawerState.open()
+                        }
+                    }
+                )
+            }
+
+            composable<Screen.TipoPenalidad> {
+                TipoPenalidadEditScreen(
                     onBack = {
                         navHostController.navigateUp()
                     }

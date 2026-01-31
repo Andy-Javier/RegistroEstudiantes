@@ -1,10 +1,13 @@
 package com.Andy.registroestudiantes.presentation.estudiante.edit
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.Andy.registroestudiantes.domain.model.Estudiante
 import com.Andy.registroestudiantes.domain.repository.EstudianteRepository
 import com.Andy.registroestudiantes.domain.use_case.estudiantes.RegistrarEstudianteUseCase
+import com.Andy.registroestudiantes.presentation.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,17 +19,19 @@ import javax.inject.Inject
 @HiltViewModel
 class EstudianteEditViewModel @Inject constructor(
     private val registrarEstudianteUseCase: RegistrarEstudianteUseCase,
-    private val repository: EstudianteRepository
+    private val repository: EstudianteRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EstudianteEditState())
     val uiState: StateFlow<EstudianteEditState> = _uiState.asStateFlow()
 
-    fun setId(id: Int) {
-        if (id > 0) {
+    init {
+        val estudianteId = savedStateHandle.toRoute<Screen.Estudiante>().estudianteId
+        if (estudianteId > 0) {
             viewModelScope.launch {
                 repository.getAll().collect { estudiantes ->
-                    estudiantes.find { it.id == id }?.let { estudiante ->
+                    estudiantes.find { it.id == estudianteId }?.let { estudiante ->
                         _uiState.update {
                             it.copy(
                                 estudianteId = estudiante.id,
