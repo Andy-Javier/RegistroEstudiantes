@@ -91,6 +91,14 @@ fun DrawerSheetContent(
                 ) {
                     onItemClick(it, Screen.AsignaturaList)
                 }
+
+                DrawerItem(
+                    title = stringResource(R.string.drawer_penalidades),
+                    icon = Icons.Default.Warning,
+                    isSelected = selectedItem == stringResource(R.string.drawer_penalidades)
+                ) {
+                    onItemClick(it, Screen.TipoPenalidadList)
+                }
             }
         }
     }
